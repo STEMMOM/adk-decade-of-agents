@@ -1,0 +1,39 @@
+
+---
+
+### 2）project.card.yaml（项目结构卡）
+
+路径：`projects/p11-stateful-inmemory/project.card.yaml`
+
+这是“结构卡版项目说明”，后面可以被脚本扫描、生成地图等。
+
+```yaml
+id: P11
+slug: stateful-inmemory
+title_en: Minimal Stateful Agent (InMemory Session)
+title_zh: 最小有记忆 Agent（InMemory Session）
+module: m03_sessions_memory
+level: 1
+status: draft
+
+goal:
+  - Build the smallest possible stateful agent using InMemorySessionService.
+  - Prove that the LLM is stateless and all memory comes from Session.events.
+  - Print the session event timeline as the agent's external short-term brain.
+
+prerequisites:
+  - python_basic_setup
+  - adk_install
+
+skills:
+  - adk.LlmAgent
+  - adk.InMemorySessionService
+  - adk.Runner
+  - event_timeline_inspection
+
+entrypoint: src/main.py
+estimated_time_min: 20
+
+outputs:
+  - "CLI demo where the agent remembers the user's name within one InMemory session."
+  - "A printed Session Dump with the full event timeline."

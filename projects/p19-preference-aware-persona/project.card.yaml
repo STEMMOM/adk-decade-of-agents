@@ -1,0 +1,37 @@
+id: P19
+slug: preference-aware-persona
+title_en: Preference-Aware Persona
+title_zh: 偏好驱动的人格结构生成
+module: m03_sessions_memory
+level: 2
+status: draft
+
+goal:
+  - Load structured user preferences from memory_store.json.
+  - Aggregate preferences into a stable, executable Persona object.
+  - Save the Persona as persona_state.json for reuse across sessions and projects.
+  - Print a clear Persona Summary to help developers verify the behavior.
+
+prerequisites:
+  - python_basic_setup
+  - adk_install
+  - project:P18
+
+skills:
+  - structured_preference_extraction
+  - persona_compilation
+  - json_io
+  - adk.SessionService
+  - long_term_memory_design
+
+entrypoint: src/main.py
+estimated_time_min: 45
+
+outputs:
+  - persona_state.json containing a structured Persona object derived from preferences.
+  - A console Persona Summary showing interests, dislikes, format preferences, and answer style.
+
+links:
+  substack: ""
+  kaggle: ""
+  notes: ""

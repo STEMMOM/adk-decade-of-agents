@@ -1,0 +1,25 @@
+id: P15
+slug: compaction-demo
+title_en: Context Compaction Demo (Automatic Summarization)
+title_zh: 自动总结 / 上下文压缩 Demo
+module: m03_sessions_memory
+level: 2
+status: draft
+goal:
+  - Demonstrate ADK's automatic context compaction mechanism.
+  - Trigger compaction via EventsCompactionConfig.
+  - Observe the generated summary event and compacted content.
+  - Show how compaction reduces entropy in long timelines.
+prerequisites:
+  - project:P11
+  - project:P14
+skills:
+  - events_compaction
+  - entropy_reduction
+  - timeline_management
+  - agent_app_architecture
+entrypoint: src/main.py
+estimated_time_min: 25
+outputs:
+  - A compaction event showing compressed summary of earlier dialogue.
+  - Printed compacted text demonstrating entropy reduction.

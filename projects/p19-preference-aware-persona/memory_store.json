@@ -1,0 +1,94 @@
+{
+  "schema_version": "1.0",
+  "user_profile": {},
+  "conversation_summaries": [
+    {
+      "app_name": "agents",
+      "user_id": "susan",
+      "session_id": "compacted-persona-demo",
+      "created_at": "2025-12-05T21:43:16.511209Z",
+      "summary_text": "The user, Susan, is providing information to build a persistent personal profile. She has shared her name, birthplace (China), current residence (US), professional interests (AI, agents, education projects), and hobbies (reading sci-fi, building agent projects, playing math/logic games with her kids). The AI agent has been acknowledging receipt of this information and prompting her to continue.",
+      "raw": {
+        "repr": "parts=[Part(\n  text='The user, Susan, is providing information to build a persistent personal profile. She has shared her name, birthplace (China), current residence (US), professional interests (AI, agents, education projects), and hobbies (reading sci-fi, building agent projects, playing math/logic games with her kids). The AI agent has been acknowledging receipt of this information and prompting her to continue.'\n)] role='model'"
+      }
+    },
+    {
+      "app_name": "agents",
+      "user_id": "susan",
+      "session_id": "compacted-persona-demo",
+      "created_at": "2025-12-05T21:43:21.294447Z",
+      "summary_text": "The user, Susan, has provided information about her hobbies, communication preferences, and values. She enjoys reading sci-fi, building agent projects, and playing math/logic games. Her communication preferences lean towards concise, structured answers with bullet points, code examples, and clear reasoning, avoiding vagueness. She values intellectual honesty, structural thinking, and long-term reproducibility, while disliking noisy UX, over-marketing, and shallow productivity hacks. The AI has acknowledged and incorporated these details into a structured profile, which was then further refined by the user's request for specific sections.\n\n**Key Information and Decisions:**\n\n*   **User Identity:** Susan.\n*   **User Background:** Born in China, currently resides in the US.\n*   **User Interests:** Professional (AI, Agent Development, Education Projects), Personal (Sci-fi, Agent Projects, Math/Logic games with kids).\n*   **User Communication Style:** Prefers structured, concise answers with bullet points, code examples, and clear reasoning. Dislikes vagueness.\n*   **User Values:** Intellectual honesty, structural thinking, long-term reproducibility.\n*   **User Dislikes:** Noisy UX, over-marketing, shallow productivity hacks.\n*   **Decision:** The AI has adopted a communication style that aligns with Susan's preferences.\n*   **Decision:** The user's profile has been structured and summarized multiple times based on her feedback, leading to a final format with specific sections (Identity, Background, Interests, Work Style, Preferences, Values, Anti-Preferences).\n\n**Unresolved Questions or Tasks:**\n\n*   None. The conversation has been a process of information gathering and profile refinement, which has been successfully completed.",
+      "raw": {
+        "repr": "parts=[Part(\n  text=\"\"\"The user, Susan, has provided information about her hobbies, communication preferences, and values. She enjoys reading sci-fi, building agent projects, and playing math/logic games. Her communication preferences lean towards concise, structured answers with bullet points, code examples, and clear reasoning, avoiding vagueness. She values intellectual honesty, structural thinking, and long-term reproducibility, while disliking noisy UX, over-marketing, and shallow productivity hacks. The AI has acknowledged and incorporated these details into a structured profile, which was then further refined by the user's request for specific sections.\n\n**Key Information and Decisions:**\n\n*   **User Identity:** Susan.\n*   **User Background:** Born in China, currently resides in the US.\n*   **User Interests:** Professional (AI, Agent Development, Education Projects), Personal (Sci-fi, Agent Projects, Math/Logic games with kids).\n*   **User Communication Style:** Prefers structured, concise answers with bullet points, code examples, and clear reasoning. Dislikes vagueness.\n*   **User Values:** Intellectual honesty, structural thinking, long-term reproducibility.\n*   **User Dislikes:** Noisy UX, over-marketing, shallow productivity hacks.\n*   **Decision:** The AI has adopted a communication style that aligns with Susan's preferences.\n*   **Decision:** The user's profile has been structured and summarized multiple times based on her feedback, leading to a final format with specific sections (Identity, Background, Interests, Work Style, Preferences, Values, Anti-Preferences).\n\n**Unresolved Questions or Tasks:**\n\n*   None. The conversation has been a process of information gathering and profile refinement, which has been successfully completed.\"\"\"\n)] role='model'"
+      }
+    },
+    {
+      "app_name": "agents",
+      "user_id": "susan",
+      "session_id": "compacted-persona-demo",
+      "created_at": "2025-12-06T20:19:45.434007Z",
+      "summary_text": "This conversation is about Susan building a personal profile with the AI agent. Susan has provided her name, birthplace (China), current residence (US), professional interests (AI, agents, education), and hobbies (reading sci-fi, building agent projects, playing math/logic games with kids). The AI has acknowledged each piece of information and prompted Susan to continue. No unresolved questions or tasks remain at this point, as the interaction is ongoing.",
+      "raw": {
+        "repr": "parts=[Part(\n  text='This conversation is about Susan building a personal profile with the AI agent. Susan has provided her name, birthplace (China), current residence (US), professional interests (AI, agents, education), and hobbies (reading sci-fi, building agent projects, playing math/logic games with kids). The AI has acknowledged each piece of information and prompted Susan to continue. No unresolved questions or tasks remain at this point, as the interaction is ongoing.'\n)] role='model'"
+      }
+    },
+    {
+      "app_name": "agents",
+      "user_id": "susan",
+      "session_id": "compacted-persona-demo",
+      "created_at": "2025-12-06T20:19:49.922791Z",
+      "summary_text": "This conversation history details the AI agent's efforts to build and refine a user profile for \"Susan\". The key actions and decisions include:\n\n*   **Initial Information Gathering:** The user provided information about their hobbies (reading sci-fi, building agent projects, playing math/logic games) and their preferred AI interaction style (concise, structured answers with bullet points, code examples, and clear reasoning, while disliking vague explanations).\n*   **Profile Construction and Refinement:** The AI agent initially created a partial profile. The user then provided additional information about their values (intellectual honesty, structural thinking, long-term reproducibility) and dislikes (noisy UX, over-marketing, shallow productivity hacks).\n*   **Structured Summary:** The AI agent successfully consolidated all provided information into a comprehensive, structured profile with distinct sections: Identity, Background, Interests (Professional and Personal), Work Style, Preferences, Values, and Anti-Preferences.\n*   **Confirmation of Understanding:** The AI agent consistently acknowledged and confirmed each piece of information and preference provided by the user, demonstrating an understanding of their requirements.\n\n**Unresolved Questions/Tasks:**\n\n*   There are no explicitly unresolved questions or outstanding tasks mentioned in this conversation history. The interaction appears to have concluded with the successful generation of a comprehensive user profile based on the provided input.",
+      "raw": {
+        "repr": "parts=[Part(\n  text=\"\"\"This conversation history details the AI agent's efforts to build and refine a user profile for \"Susan\". The key actions and decisions include:\n\n*   **Initial Information Gathering:** The user provided information about their hobbies (reading sci-fi, building agent projects, playing math/logic games) and their preferred AI interaction style (concise, structured answers with bullet points, code examples, and clear reasoning, while disliking vague explanations).\n*   **Profile Construction and Refinement:** The AI agent initially created a partial profile. The user then provided additional information about their values (intellectual honesty, structural thinking, long-term reproducibility) and dislikes (noisy UX, over-marketing, shallow productivity hacks).\n*   **Structured Summary:** The AI agent successfully consolidated all provided information into a comprehensive, structured profile with distinct sections: Identity, Background, Interests (Professional and Personal), Work Style, Preferences, Values, and Anti-Preferences.\n*   **Confirmation of Understanding:** The AI agent consistently acknowledged and confirmed each piece of information and preference provided by the user, demonstrating an understanding of their requirements.\n\n**Unresolved Questions/Tasks:**\n\n*   There are no explicitly unresolved questions or outstanding tasks mentioned in this conversation history. The interaction appears to have concluded with the successful generation of a comprehensive user profile based on the provided input.\"\"\"\n)] role='model'"
+      }
+    }
+  ],
+  "preferences": [
+    {
+      "key": "interests",
+      "value": [
+        "reading_sci_fi",
+        "building_agent_projects",
+        "math_logic_games_with_children"
+      ],
+      "confidence": 0.85,
+      "source": "conversation_summaries[0]"
+    },
+    {
+      "key": "answer_style",
+      "value": "concise, highly structured answers with clear reasoning and examples",
+      "confidence": 0.95,
+      "source": "conversation_summaries[1]"
+    },
+    {
+      "key": "format_preferences",
+      "value": [
+        "bullet_points",
+        "code_examples",
+        "clear_reasoning"
+      ],
+      "confidence": 0.9,
+      "source": "conversation_summaries[1]"
+    },
+    {
+      "key": "dislikes",
+      "value": [
+        "noisy_ux",
+        "over_marketing"
+      ],
+      "confidence": 0.9,
+      "source": "conversation_summaries[1]"
+    },
+    {
+      "key": "dislikes",
+      "value": [
+        "vague_explanations",
+        "noisy_ux",
+        "over_marketing"
+      ],
+      "confidence": 0.9,
+      "source": "conversation_summaries[3]"
+    }
+  ],
+  "knowledge": []
+}

@@ -1,0 +1,43 @@
+---
+id: P16
+slug: compacted-memory-etl-user-persona
+title_en: Compacted Persona Memory ETL Demo
+title_zh: 人格压缩与长期记忆提取示例 (Compacted Persona Memory ETL Demo)
+module: m03_sessions_memory
+level: 2
+status: draft
+
+goal:
+  - Demonstrate persona-driven compaction using EventsCompactionConfig.
+  - Run a structured identity + preference + values dialogue.
+  - Trigger compaction to produce persona summaries.
+  - Extract compacted_content from Session.events.
+  - Persist persona summaries into memory_store.json as long-term memory.
+  - Provide clean persona seed data for P17–P20.
+
+prerequisites:
+  - project:P11   # In-memory session basics
+  - project:P12   # Persistent sessions
+  - project:P14   # Session isolation tests
+  - project:P15   # Compaction fundamentals
+
+skills:
+  - adk.EventsCompactionConfig
+  - adk.InMemoryRunner
+  - structure.compaction_layer
+  - structure.persona_seed
+  - structure.memory_etl
+  - structure.longterm_store
+
+entrypoint: src/main.py
+estimated_time_min: 45
+
+outputs:
+  - "A compaction-enabled persona-building conversation."
+  - "Structured persona summaries saved to memory_store.json."
+  - "A long-term memory artifact ready for Schema v1 (P17)."
+
+links:
+  substack: ""
+  kaggle: ""
+  notes: ""

@@ -1,0 +1,7 @@
+google-adk
+google-genai
+aiosqlite
+greenlet
+jupyter
+ipykernel
+

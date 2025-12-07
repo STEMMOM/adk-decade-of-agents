@@ -1,0 +1,38 @@
+
+---
+
+## 3️⃣ P12 的 project.card.yaml（结构卡）
+
+新建：  
+`projects/p12-stateful-db-session/project.card.yaml`
+
+```yaml
+id: P12
+slug: stateful-db-session
+title_en: First Cross-Process Stateful Agent (SQLite Sessions)
+title_zh: 第一个跨进程有记忆的 Agent（SQLite 会话）
+module: m03_sessions_memory
+level: 1
+status: draft
+
+goal:
+  - Use DatabaseSessionService to persist Session.events into a SQLite file.
+  - Reuse the same session_id across multiple runs to prove cross-process memory.
+  - Inspect the underlying events table with sqlite3 to verify on-disk persistence.
+
+prerequisites:
+  - project:P11
+
+skills:
+  - adk.DatabaseSessionService
+  - sqlite_event_store
+  - cross_process_session
+  - event_ledger_inspection
+
+entrypoint: src/main.py
+estimated_time_min: 30
+
+outputs:
+  - "SQLite database file day3_sessions.db containing the events ledger."
+  - "Console output showing session events from both ADK and raw sqlite3."
+---

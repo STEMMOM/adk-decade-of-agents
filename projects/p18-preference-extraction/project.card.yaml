@@ -1,0 +1,38 @@
+id: P18
+slug: preference-extraction
+title_en: Preference Extraction from Conversation Summaries
+title_zh: 基于对话摘要的偏好抽取
+module: m03_sessions_memory
+level: 2
+status: draft
+
+goal:
+  - Read conversation_summaries from memory_store.json and detect user preferences.
+  - Convert free-form language into structured preference objects with confidence scores.
+  - Merge newly extracted preferences with existing ones in memory_store.json.
+  - Print a deterministic Preference Extraction Summary to the console.
+
+prerequisites:
+  - python_basic_setup
+  - adk_install
+  - project:P11
+  - project:P15
+
+skills:
+  - adk.LlmAgent
+  - adk.SessionService
+  - structured_preference_extraction
+  - memory_etl
+  - json_io
+
+entrypoint: src/main.py
+estimated_time_min: 45
+
+outputs:
+  - "Updated memory_store.json with a preferences array containing structured (key, value, confidence, source) objects."
+  - "A clear console summary of how many conversation summaries were scanned and how many preferences were extracted/merged."
+
+links:
+  substack: ""
+  kaggle: ""
+  notes: ""

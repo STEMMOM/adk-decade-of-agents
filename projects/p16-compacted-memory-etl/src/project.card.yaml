@@ -1,0 +1,38 @@
+id: P16
+slug: compacted-memory-etl
+title_en: Compacted Memory ETL Demo (From Summary Events to Long-term Store)
+title_zh: 压缩摘要驱动的 Memory ETL 演示 (Compacted summary-driven Memory ETL demo)
+module: m03_sessions_memory
+level: 2
+status: draft
+
+goal:
+  - Connect the Compaction Layer to the Long-term Memory Layer.
+  - Detect compaction summary events in Session.events.
+  - Extract actions.compaction.compacted_content into structured long-term memory.
+  - Write extracted summaries into memory_store.json under conversation_summaries.
+  - Demonstrate the entropy-controlled upgrade path: Events → Compaction → ETL → Memory Store.
+
+prerequisites:
+  - project:P11     # minimal stateful in-memory
+  - project:P12     # SQLite persistent session
+  - project:P13     # DB inspector (optional but helpful)
+  - project:P14     # session isolation tests
+  - project:P15     # compaction demo (必需 / required)
+
+skills:
+  - adk.App
+  - adk.EventsCompactionConfig
+  - adk.InMemoryRunner
+  - structure.entropy_control
+  - structure.compaction_layer
+  - structure.memory_etl
+  - structure.longterm_store
+
+entrypoint: src/main.py
+estimated_time_min: 50
+
+outputs:
+  - "A compaction-enabled session that generates compaction summaries."
+  - "Extracted summaries written to memory_store.json."
+  - "A new long-term memory channel: conversation_summaries[*]."

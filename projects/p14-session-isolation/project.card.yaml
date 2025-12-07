@@ -1,0 +1,29 @@
+id: P14
+slug: session-isolation
+title_en: Session Isolation Test (Parallel Universes)
+title_zh: 会话隔离性测试（平行宇宙）
+module: m03_sessions_memory
+level: 1
+status: draft
+
+goal:
+  - Create two independent sessions: `session-A` and `session-B`.
+  - In session-A, capture the user's name “Sam” and recall it on request.
+  - In session-B, handle the same question without prior context.
+  - Print both `Session.events` timelines to prove isolation.
+
+prerequisites:
+  - project:P13
+
+skills:
+  - multi_session_management
+  - adk.SessionService
+  - event_timeline_inspection
+  - isolation_validation
+
+entrypoint: src/main.py
+estimated_time_min: 20
+
+outputs:
+  - "Console logs showing creation of Session A and Session B."
+  - "Two separate event timelines labeled SESSION A EVENTS and SESSION B EVENTS."

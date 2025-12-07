@@ -1,0 +1,42 @@
+{
+  "id": "persona_default_v1",
+  "name": "Unknown User",
+  "country": null,
+  "locale": null,
+  "description": "They are especially interested in: reading_sci_fi, building_agent_projects, math_logic_games_with_children. They prefer answers that are: concise, highly structured answers with clear reasoning and examples. They strongly dislike: noisy_ux, over_marketing, vague_explanations.",
+  "interests": [
+    "reading_sci_fi",
+    "building_agent_projects",
+    "math_logic_games_with_children"
+  ],
+  "interests_confidence": 0.85,
+  "dislikes": [
+    "noisy_ux",
+    "over_marketing",
+    "vague_explanations"
+  ],
+  "dislikes_confidence": 0.9,
+  "format_preferences": [
+    "bullet_points",
+    "code_examples",
+    "clear_reasoning"
+  ],
+  "format_preferences_confidence": 0.9,
+  "answer_style": "concise, highly structured answers with clear reasoning and examples",
+  "answer_style_confidence": 0.95,
+  "sources": {
+    "interests": [
+      "conversation_summaries[0]"
+    ],
+    "dislikes": [
+      "conversation_summaries[1]",
+      "conversation_summaries[3]"
+    ],
+    "format_preferences": [
+      "conversation_summaries[1]"
+    ],
+    "answer_style": [
+      "conversation_summaries[1]"
+    ]
+  }
+}
