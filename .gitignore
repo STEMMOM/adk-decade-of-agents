@@ -27,3 +27,6 @@ credentials.json
 .cache/
 logs/
 
+# Runtime OS state
+runtime_data/
+

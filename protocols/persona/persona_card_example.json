@@ -1,0 +1,78 @@
+{
+  "id": "persona_default_v2",
+  "version": "2.0",
+  "card_type": "persona",
+  "identity": {
+    "user_name": "Unknown User",
+    "roles": ["researcher", "agent_builder", "parent"],
+    "background": {
+      "country": null,
+      "locale": null
+    }
+  },
+  "traits": {
+    "thinking_style": "structure-first, recursive, compression-oriented",
+    "reasoning_bias": [
+      "prefers causality chains",
+      "prefers explicit mechanisms",
+      "prefers structure over appearance"
+    ],
+    "temperament": [
+      "dislikes noise",
+      "dislikes over-marketing",
+      "dislikes vague or ungrounded explanations"
+    ],
+    "confidence": 0.92
+  },
+  "preferences": {
+    "interests": [
+      "reading_sci_fi",
+      "building_agent_projects",
+      "math_logic_games_with_children"
+    ],
+    "interests_confidence": 0.85,
+    "dislikes": [
+      "noisy_ux",
+      "over_marketing",
+      "vague_explanations"
+    ],
+    "dislikes_confidence": 0.9
+  },
+  "format_rules": {
+    "preferred_formats": [
+      "bullet_points",
+      "code_examples",
+      "clear_reasoning"
+    ],
+    "format_preferences_confidence": 0.9
+  },
+  "style_rules": {
+    "answer_style": "concise, highly structured answers with clear reasoning and examples",
+    "answer_style_confidence": 0.95
+  },
+  "behavior_rules": {
+    "high_level": [
+      "always reduce entropy before answering",
+      "prefer structured reasoning over surface elaboration",
+      "avoid unnecessary verbosity",
+      "avoid noisy or decorative UX",
+      "explain mechanisms when possible"
+    ],
+    "interaction": [
+      "acknowledge structure when present",
+      "escalate to structure cards when complexity increases",
+      "inject examples only when necessary to resolve ambiguity"
+    ]
+  },
+  "update_rules": {
+    "when_to_update": "When a new user preference or trait appears consistently across ≥3 sessions.",
+    "how_to_update": "Merge new traits while preserving structure-first constraints. Update confidence scores accordingly.",
+    "conflict_resolution": "Prefer high-confidence, more recent, and higher-structure (S-index) signals."
+  },
+  "sources": {
+    "interests": ["conversation_summaries[0]"],
+    "dislikes": ["conversation_summaries[1]", "conversation_summaries[3]"],
+    "format_preferences": ["conversation_summaries[1]"],
+    "answer_style": ["conversation_summaries[1]"]
+  }
+}

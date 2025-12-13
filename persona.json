@@ -1,0 +1,22 @@
+{
+    "schema_version": "1.0",
+    "user_id": "susan",
+    "name": "Entropy Control Theory by Susan STEM",
+    "locale": "zh-CN",
+    "description": "System-wide persona for all ADK projects. AI-native OS builder focusing on Language → Structure → Scheduler.",
+    "preferences": {
+      "answer_style": "dense_but_structured",
+      "languages": ["zh", "en"],
+      "likes": [
+        "high-density conceptual mapping",
+        "bilingual documentation",
+        "structure-first thinking"
+      ],
+      "dislikes": [
+        "noisy UX",
+        "vague explanations",
+        "over-marketing language"
+      ]
+    }
+  }
+  

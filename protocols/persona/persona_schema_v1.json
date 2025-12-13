@@ -1,0 +1,168 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Persona Protocol Schema v1.0",
+  "type": "object",
+  "required": [
+    "id",
+    "version",
+    "card_type",
+    "identity",
+    "traits",
+    "preferences",
+    "format_rules",
+    "style_rules",
+    "behavior_rules",
+    "update_rules",
+    "sources"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for the persona card."
+    },
+    "version": {
+      "type": "string",
+      "description": "Semantic version of this persona card."
+    },
+    "card_type": {
+      "type": "string",
+      "const": "persona",
+      "description": "Must be 'persona'."
+    },
+    "identity": {
+      "type": "object",
+      "required": ["user_name", "roles", "background"],
+      "properties": {
+        "user_name": { "type": "string" },
+        "roles": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "background": {
+          "type": "object",
+          "required": ["country", "locale"],
+          "properties": {
+            "country": { "type": ["string", "null"] },
+            "locale": { "type": ["string", "null"] }
+          }
+        }
+      }
+    },
+    "traits": {
+      "type": "object",
+      "required": ["thinking_style", "reasoning_bias", "temperament", "confidence"],
+      "properties": {
+        "thinking_style": { "type": "string" },
+        "reasoning_bias": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "temperament": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "preferences": {
+      "type": "object",
+      "required": ["interests", "interests_confidence", "dislikes", "dislikes_confidence"],
+      "properties": {
+        "interests": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "interests_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "dislikes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "dislikes_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "format_rules": {
+      "type": "object",
+      "required": ["preferred_formats", "format_preferences_confidence"],
+      "properties": {
+        "preferred_formats": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "format_preferences_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "style_rules": {
+      "type": "object",
+      "required": ["answer_style", "answer_style_confidence"],
+      "properties": {
+        "answer_style": { "type": "string" },
+        "answer_style_confidence": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        }
+      }
+    },
+    "behavior_rules": {
+      "type": "object",
+      "required": ["high_level", "interaction"],
+      "properties": {
+        "high_level": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "interaction": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "update_rules": {
+      "type": "object",
+      "required": ["when_to_update", "how_to_update", "conflict_resolution"],
+      "properties": {
+        "when_to_update": { "type": "string" },
+        "how_to_update": { "type": "string" },
+        "conflict_resolution": { "type": "string" }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "required": ["interests", "dislikes", "format_preferences", "answer_style"],
+      "properties": {
+        "interests": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "dislikes": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "format_preferences": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "answer_style": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}
