@@ -1,0 +1,62 @@
+project_id: P02
+title: Stateful Sessions & In-Memory Event Ledger
+arc: decade-of-agents
+status: active
+mode: in-memory-cache
+
+description: >
+  Introduce an in-memory session and event ledger. All agent actions
+  (user messages, tool calls, tool results, outputs) are recorded as
+  structured, append-only events stored only inside Python runtime memory.
+  No persistence is performed in P02.
+
+structure_card:
+  name: P02 — Stateful Sessions (In-Memory)
+  goal: >
+    Build the agent’s first internal world using an ephemeral, append-only
+    event ledger stored in Python RAM, enabling observability, memory ETL,
+    planning, routing, and later governance.
+  input:
+    - user_message: "A question for the agent"
+  mechanism: >
+    Wrap each agent run in a Session object. All interactions are recorded
+    to an in-memory EventLedger via ledger.add(event_type, **data).
+    Events are not written to disk in P02.
+  conditions:
+    - P01 minimal agent functional
+    - Virtualenv activated
+    - Gemini API key loaded into environment
+  output:
+    - session_id (UUID4)
+    - a list of structured events stored in memory
+    - printed ledger for debugging and inspection
+
+repo:
+  root: /Users/Agent/adk-decade-of-agents
+  project_path: projects/p02-event-ledger
+  entry_point: src/main.py
+
+run:
+  activate_venv: "source .venv/bin/activate"
+  env_load: "export $(grep -v '^#' .env | xargs)"
+  command: "cd projects/p02-event-ledger && python src/main.py"
+
+dependencies:
+  python: ">=3.10"
+  pip:
+    - google-genai
+
+links:
+  previous: P01
+  next:
+    - P03
+
+notes:
+  - >
+    P02 is intentionally ephemeral: nothing is persisted. Long-term memory
+    will be introduced in P04 via Memory ETL. This separation keeps the
+    agent clean, modular, and evolution-ready.
+  - >
+    The in-memory session mirrors real agent OS architectures: short-term
+    episodic memory is transient; only distilled facts enter long-term
+    memory.

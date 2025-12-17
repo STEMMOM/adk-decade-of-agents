@@ -1,0 +1,67 @@
+project_id: P01
+title: Minimal Agent Cell
+arc: decade-of-agents
+status: active
+
+description: >
+  Build the smallest executable agent cell: a minimal agent with identity,
+  instructions, a single execution path, and a tool interface that calls Gemini once.
+  This is not a chatbot demo, but the structural origin of the P01–P10 agent system.
+
+# Structure Card fields (aligned with your 6-field structure format)
+structure_card:
+  name: P01 — Minimal Agent Cell
+  goal: >
+    Create the first “living” agent unit that can perform one complete
+    thought–action cycle via Gemini, with a clear separation between Agent,
+    Tool, and Model.
+  input:
+    - user_question: "A real-world question (e.g., 'What happened in AI this week?')"
+    - env:
+        - GOOGLE_API_KEY from Google AI Studio
+        - GEMINI_API_KEY from Google AI Studio
+  mechanism: >
+    Initialize a MinimalAgent with name, instructions, and model; route user
+    input through run_once(), which calls ask_gemini() as a tool wrapper
+    around client.models.generate_content(...), then return the model's answer.
+  conditions:
+    - Python virtualenv .venv is activated at repo root
+    - google-genai is installed in the .venv
+    - .env exists at repo root and is loaded into the shell
+    - A test call returning 'API_OK' has succeeded
+  output:
+    - console_log:
+        - "[P01] Minimal Agent Cell Demo"
+        - "User: <question>"
+        - "Agent: <Gemini answer text>"
+    - a verified, runnable agent execution loop using Gemini
+
+repo:
+  root: /Users/Agent/adk-decade-of-agents
+  project_path: projects/p01-minimal-agent
+  entry_point: src/main.py
+
+run:
+  activate_venv: "source .venv/bin/activate  # or .venv\\Scripts\\Activate.ps1 on Windows"
+  env_load: "export $(grep -v '^#' .env | xargs)"
+  command: "cd projects/p01-minimal-agent && python src/main.py"
+
+dependencies:
+  python: ">=3.10"
+  pip:
+    - google-genai
+
+links:
+  previous: null
+  next:
+    - P02
+
+notes:
+  - >
+    This project intentionally avoids UI, frameworks, or complex tooling.
+    It is the cleanest possible expression of an “agent cell” that later
+    projects can extend with sessions, observability, memory, tools, routing,
+    governance, and self-evolution.
+  - >
+    The key conceptual distinction: P01 defines a minimal Agent/Tool/Model
+    structure, whereas a chatbot is just a prompt → model → text loop.
