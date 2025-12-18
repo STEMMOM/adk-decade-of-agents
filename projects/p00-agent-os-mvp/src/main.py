@@ -1,6 +1,7 @@
 # projects/p00-agent-os-mvp/src/main.py
 from __future__ import annotations
 from typing import Any, Dict
+from datetime import datetime
 
 from adk_runtime.memory_store import load_memory, save_memory
 from adk_runtime.persona_engine import load_persona
@@ -158,21 +159,18 @@ def main() -> None:
             parent_span_id=tool_span_id,
         )
 
-    # memory update (先不做 P07 gate，这里照旧)
-    conversation_summaries = memory.setdefault("conversation_summaries", [])
-    conversation_summaries.append(
-        {
-            "app_name": PROJECT_NAME,
-            "session_id": session_id,
-            "summary_text": f"MVP run: user said '{user_message}', agent replied stub text.",
-            "trace_id": trace_id,
-        }
-    )
+    # memory update (P07 allow-list: notes.* only)
     persona_id = persona.get("user_id", "unknown")
     result = save_memory(
-        memory,
+        {},
         source="p00",
         actor={"agent_id": "p00", "persona_id": persona_id},
+        key=f"notes.session_{session_id}",
+        value={
+            "text": user_message,
+            "ts": datetime.utcnow().isoformat() + "Z",
+            "trace_id": trace_id,
+        },
     )
     if result["status"] == "blocked":
         print("WARNING: Memory write blocked by policy:", result["decision"]["reason"])
