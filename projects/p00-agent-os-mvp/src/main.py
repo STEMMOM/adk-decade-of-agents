@@ -168,7 +168,14 @@ def main() -> None:
             "trace_id": trace_id,
         }
     )
-    save_memory(memory)
+    persona_id = persona.get("user_id", "unknown")
+    result = save_memory(
+        memory,
+        source="p00",
+        actor={"agent_id": "p00", "persona_id": persona_id},
+    )
+    if result["status"] == "blocked":
+        print("WARNING: Memory write blocked by policy:", result["decision"]["reason"])
 
     end_span_id, _ = ctx.new_span()
     log_event(

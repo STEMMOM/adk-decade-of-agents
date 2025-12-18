@@ -7,6 +7,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from .paths import EVENTS_FILE, ensure_runtime_dirs
+
 SCHEMA_VERSION = "1.0"
 
 
@@ -90,3 +92,22 @@ class EventWriter:
             f.write(line + "\n")
 
         return env
+
+
+def append_event(
+    *,
+    event_type: str,
+    session_id: str,
+    trace_id: str,
+    payload: Optional[Dict[str, Any]] = None,
+    ts: Optional[str] = None,
+) -> EventEnvelopeV1:
+    ensure_runtime_dirs()
+    writer = EventWriter(EVENTS_FILE)
+    return writer.emit(
+        event_type=event_type,
+        session_id=session_id,
+        trace_id=trace_id,
+        payload=payload,
+        ts=ts,
+    )
