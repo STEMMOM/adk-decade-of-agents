@@ -1,0 +1,95 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://example.org/protocols/events/event_envelope_v1.json",
+    "title": "Event Envelope v1",
+    "description": "Deterministic, auditable event envelope for AI-Native OS runtime.",
+    "type": "object",
+    "additionalProperties": false,
+  
+    "required": [
+      "schema_version",
+      "event_id",
+      "event_type",
+      "ts",
+      "session_id",
+      "trace_id",
+      "span_id",
+      "actor",
+      "payload",
+      "payload_hash"
+    ],
+  
+    "properties": {
+      "schema_version": {
+        "type": "string",
+        "const": "1.0",
+        "description": "Event envelope schema version. Must be '1.0'."
+      },
+  
+      "event_id": {
+        "type": "string",
+        "description": "Globally unique identifier for this event (UUID or ULID)."
+      },
+  
+      "event_type": {
+        "type": "string",
+        "description": "Semantic type of the event (e.g. session.start, user.message, agent.reply)."
+      },
+  
+      "ts": {
+        "type": "string",
+        "format": "date-time",
+        "description": "UTC timestamp in ISO8601 format with milliseconds, ending with 'Z'."
+      },
+  
+      "session_id": {
+        "type": "string",
+        "description": "Identifier of the session (one life instance)."
+      },
+  
+      "trace_id": {
+        "type": "string",
+        "description": "Causal trace identifier. Multiple traces may exist within one session."
+      },
+  
+      "span_id": {
+        "type": "string",
+        "description": "Span identifier within a trace. Used to form a causal tree."
+      },
+  
+      "parent_span_id": {
+        "type": ["string", "null"],
+        "description": "Optional parent span identifier for causal hierarchy."
+      },
+  
+      "actor": {
+        "type": "string",
+        "enum": ["runtime", "user", "agent", "tool", "policy", "system"],
+        "description": "Who caused this event."
+      },
+  
+      "payload": {
+        "type": "object",
+        "description": "Structured event payload. Must be canonicalizable JSON."
+      },
+  
+      "payload_hash": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$",
+        "description": "SHA-256 hash of canonical JSON serialization of payload."
+      },
+  
+      "envelope_hash": {
+        "type": "string",
+        "pattern": "^[a-f0-9]{64}$",
+        "description": "Optional SHA-256 hash of the full envelope (excluding this field)."
+      },
+  
+      "prev_envelope_hash": {
+        "type": ["string", "null"],
+        "pattern": "^[a-f0-9]{64}$",
+        "description": "Optional hash pointer to the previous event envelope in the same session."
+      }
+    }
+  }
+     
