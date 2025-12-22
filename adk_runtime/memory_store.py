@@ -70,7 +70,8 @@ def _policy_check_write_proposal(proposal: Dict[str, Any]) -> Dict[str, Any]:
 
 def save_memory(data: Dict[str, Any], **kwargs) -> Dict[str, Any]:
     """
-    P07: audited memory write.
+    P07: audited memory write (key-level upsert).
+    Backward compatible signature: accepts **kwargs for source/actor/key/value.
     """
     ensure_runtime_dirs()
     source = kwargs.get("source", "runtime")

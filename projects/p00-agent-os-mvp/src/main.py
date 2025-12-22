@@ -1,12 +1,14 @@
 # projects/p00-agent-os-mvp/src/main.py
 from __future__ import annotations
 from typing import Any, Dict
-from datetime import datetime
+from datetime import datetime, timezone
 
-from adk_runtime.memory_store import load_memory, save_memory
+from adk_runtime import memory_store as legacy_memory_store
+from adk_runtime.event_ledger import EventLedger
+from adk_runtime.memory_gate_p08 import P08MemoryGate, RuntimeSchema
 from adk_runtime.persona_engine import load_persona
 from adk_runtime.observability import log_event, new_trace_id
-from adk_runtime.paths import ensure_runtime_dirs
+from adk_runtime.paths import RUNTIME_DATA_DIR, ensure_runtime_dirs
 from adk_runtime.trace_context import TraceContext
 
 import uuid
@@ -64,15 +66,21 @@ def run_with_kernel(
 
 def main() -> None:
     ensure_runtime_dirs()
+    ledger = EventLedger(RUNTIME_DATA_DIR / "memory_gate_ledger.jsonl")
+    runtime_schema = RuntimeSchema(supported_schema_version=1, supported_store_version=0)
+    memory_gate = P08MemoryGate(legacy_memory_store, ledger, runtime_schema)
 
     session_id = f"p00-{uuid.uuid4()}"
     trace_id = new_trace_id()
 
     ctx = TraceContext(trace_id=trace_id)
 
+    # P08 startup confrontation (refuse over silent compatibility)
+    memory_gate.startup_confrontation(session_id="p00-startup")
+
     # 1) persona & memory
     persona = load_persona(user_id="susan")
-    memory = load_memory()
+    memory = memory_gate.load_memory()
 
     root_span_id, _ = ctx.new_span()
     log_event(
@@ -161,14 +169,17 @@ def main() -> None:
 
     # memory update (P07 allow-list: notes.* only)
     persona_id = persona.get("user_id", "unknown")
-    result = save_memory(
+    result = memory_gate.save_memory(
         {},
         source="p00",
         actor={"agent_id": "p00", "persona_id": persona_id},
+        # All new writes must use runtime.current schema_version; legacy versions are migration-only.
+        schema_version=runtime_schema.supported_schema_version,
+        zone="observation",
         key=f"notes.session_{session_id}",
         value={
             "text": user_message,
-            "ts": datetime.utcnow().isoformat() + "Z",
+            "ts": datetime.now(timezone.utc).isoformat(),
             "trace_id": trace_id,
         },
     )
