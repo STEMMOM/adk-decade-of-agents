@@ -32,3 +32,20 @@ def get_project_src_dir(project_name: str) -> Path:
 
 def get_log_file(name: str = "runtime.log") -> Path:
     return LOGS_DIR / name
+
+
+# P10 helpers
+def runtime_data_dir() -> Path:
+    """Return runtime_data dir and ensure it exists."""
+    RUNTIME_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    return RUNTIME_DATA_DIR
+
+
+def events_ledger_path() -> Path:
+    """Path to the events ledger (append-only)."""
+    return runtime_data_dir() / "events.jsonl"
+
+
+def memory_store_path() -> Path:
+    """Path to the memory store JSON file."""
+    return runtime_data_dir() / "memory_store.json"
