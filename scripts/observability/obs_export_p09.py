@@ -39,17 +39,21 @@ def _write_jsonl(path: Path, records: Iterable[Dict[str, Any]]) -> None:
 
 def _map_run_events(ev: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     etype = ev.get("event_type")
-    if etype == "session.start":
+    payload = ev.get("payload") or {}
+    run_id = payload.get("run_id") or ev.get("run_id")
+    ts = ev.get("ts") or ev.get("timestamp")
+    if etype == "system.boot":
         return {
             "event_type": "run_started",
-            "run_id": ev.get("session_id"),
-            "timestamp": ev.get("ts") or ev.get("timestamp"),
+            "run_id": run_id,
+            "timestamp": ts,
+            "status": "success",
         }
-    if etype == "session.end":
+    if etype == "system.shutdown":
         return {
             "event_type": "run_finished",
-            "run_id": ev.get("session_id"),
-            "timestamp": ev.get("ts") or ev.get("timestamp"),
+            "run_id": run_id,
+            "timestamp": ts,
             "status": "success",
         }
     return None
@@ -59,22 +63,28 @@ def _map_tool_events(ev: Dict[str, Any]) -> Optional[Dict[str, Any]]:
     etype = ev.get("event_type")
     payload = ev.get("payload", {}) or {}
     ts = ev.get("ts") or ev.get("timestamp")
+    run_id = ev.get("run_id") or payload.get("run_id")
+    session_id = ev.get("session_id") or payload.get("session_id")
+    if not (isinstance(run_id, str) and run_id.startswith("run_")):
+        return None
     if etype == "tool.call":
         return {
             "event_type": "tool_call_started",
-            "run_id": ev.get("session_id"),
+            "run_id": run_id,
             "timestamp": ts,
             "layer": "tool",
             "tool_name": payload.get("tool_name"),
+            "session_id": session_id,
         }
     if etype == "tool.result":
         return {
             "event_type": "tool_call_finished",
-            "run_id": ev.get("session_id"),
+            "run_id": run_id,
             "timestamp": ts,
             "layer": "tool",
             "tool_name": payload.get("tool_name"),
             "status": "success",
+            "session_id": session_id,
         }
     return None
 
@@ -104,12 +114,16 @@ def export(in_path: Path, out_path: Path) -> None:
     mapped_events = []
     tool_starts: Dict[Tuple[str, str], Dict[str, Any]] = {}
 
-    for ev in _read_jsonl(in_path):
-        m = _map_run_events(ev)
-        if m:
-            mapped_events.append(m)
-            continue
+    # 1) Run lifecycle from system boot/shutdown (events.jsonl if present)
+    events_path = Path("runtime_data/events.jsonl")
+    if events_path.exists():
+        for ev in _read_jsonl(events_path):
+            m = _map_run_events(ev)
+            if m:
+                mapped_events.append(m)
 
+    # 2) Tool calls from observability ledger (input path)
+    for ev in _read_jsonl(in_path):
         m = _map_tool_events(ev)
         if m:
             if m["event_type"] == "tool_call_started":

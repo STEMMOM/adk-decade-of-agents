@@ -9,6 +9,7 @@ from typing import Optional, Literal, Dict, Any
 
 from adk_runtime import paths
 from adk_runtime.event_ledger import EventLedger
+from adk_runtime import trace_context
 
 
 BootMode = Literal["cold", "warm", "recover"]
@@ -124,6 +125,9 @@ def boot(*, ledger: EventLedger) -> BootContext:
         started_at=started_at,
         recovered_from_run_id=recovered_from,
     )
+
+    # Set context before any downstream observability writes.
+    trace_context.set_process_context(ctx.system_id, ctx.process_id, ctx.run_id)
 
     # Write system.boot as an auditable fact
     ledger.append(

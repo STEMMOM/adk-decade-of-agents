@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 from adk_runtime import memory_store as legacy_memory_store
 from adk_runtime.event_ledger import EventLedger
 from adk_runtime.memory_gate_p08 import P08MemoryGate, RuntimeSchema
+from adk_runtime.process.boot import boot
 from adk_runtime.persona_engine import load_persona
 from adk_runtime.observability import log_event, new_trace_id
 from adk_runtime.paths import RUNTIME_DATA_DIR, ensure_runtime_dirs
@@ -66,6 +67,8 @@ def run_with_kernel(
 
 def main() -> None:
     ensure_runtime_dirs()
+    ledger = EventLedger(RUNTIME_DATA_DIR / "events.jsonl")
+    boot_ctx = boot(ledger=ledger)
     ledger = EventLedger(RUNTIME_DATA_DIR / "memory_gate_ledger.jsonl")
     runtime_schema = RuntimeSchema(supported_schema_version=1, supported_store_version=0)
     memory_gate = P08MemoryGate(legacy_memory_store, ledger, runtime_schema)

@@ -8,6 +8,7 @@ from typing import Any, Dict, Optional
 
 from .paths import EVENTS_FILE, RUNTIME_DATA_DIR, ensure_runtime_dirs, get_log_file
 from .events import EventWriter  # ✅ P04：统一信封写入口
+from . import trace_context
 
 
 # P09: canonical observability ledger (append-only, replayable)
@@ -60,6 +61,9 @@ def emit_event(
     layer: Optional[str] = None,
     timestamp: Optional[str] = None,
     latency_ms: Optional[int] = None,
+    session_id: Optional[str] = None,
+    system_id: Optional[str] = None,
+    process_id: Optional[str] = None,
 ) -> None:
     """P09: append-only event emission with canonical fields. P09 v1.1 adds run_id enforcement, layer normalization, latency_ms top-level."""
     ensure_runtime_dirs()
@@ -71,10 +75,16 @@ def emit_event(
         "run_id": run_id,
         "timestamp": timestamp or _iso_utc(),
     }
+    if system_id:
+        record["system_id"] = system_id
+    if process_id:
+        record["process_id"] = process_id
     if norm_layer:
         record["layer"] = norm_layer
     if latency_ms is not None:
         record["latency_ms"] = int(latency_ms)
+    if session_id:
+        record["session_id"] = session_id
     if payload:
         # optional backward-compatible copy
         if latency_ms is not None:
@@ -142,6 +152,17 @@ def log_event(
     p = dict(payload)
     p["_source"] = source
     p["_trace_id"] = trace_id
+    system_id = trace_context.get_system_id()
+    process_id = trace_context.get_process_id()
+    run_id = trace_context.get_run_id()
+    if system_id:
+        p["_system_id"] = system_id
+    if process_id:
+        p["_process_id"] = process_id
+    if not run_id:
+        run_id = "unknown"
+        p["_missing_run_id_reason"] = "no_trace_context"
+
     if actor is not None:
         p["_actor"] = actor
     if span_id is not None:
@@ -149,11 +170,17 @@ def log_event(
     if parent_span_id is not None:
         p["_parent_span_id"] = parent_span_id
 
-    emit_event(event_type=event_type, run_id=session_id, payload=p, layer=_normalize_layer(event_type, layer))
+    emit_event(
+        event_type=event_type,
+        run_id=run_id,
+        payload=p,
+        layer=_normalize_layer(event_type, layer),
+        session_id=session_id,
+        system_id=system_id,
+        process_id=process_id,
+    )
 
     # ✅ 同时写一份人类可读日志（MVP 保留）
     log_file = get_log_file()
     with log_file.open("a", encoding="utf-8") as f:
         f.write(f"[{_now_human()}] {event_type} ({source}) {payload}\n")
-
-
