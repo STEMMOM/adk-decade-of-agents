@@ -1,0 +1,6 @@
+# Sample Observability Events (JSONL, v1)  
+# 观测事件示例（JSONL，v1）
+{"schema_version":"1.0","event_type":"session.start","session_id":"p00-demo-session","trace_id":"TRACE_ID","ts":"2024-01-01T00:00:00.000Z","payload":{"source":"p00-agent-os-mvp","persona_user_id":"susan"},"payload_hash":"HASH"}
+{"schema_version":"1.0","event_type":"user.message","session_id":"p00-demo-session","trace_id":"TRACE_ID","ts":"2024-01-01T00:00:01.000Z","payload":{"text":"Hello, this is the first OS-level MVP run."},"payload_hash":"HASH"}
+{"schema_version":"1.0","event_type":"agent.reply","session_id":"p00-demo-session","trace_id":"TRACE_ID","ts":"2024-01-01T00:00:02.000Z","payload":{"reply":"[MVP Kernel Stub] You said: Hello, this is the first OS-level MVP run.","tool_calls":[]},"payload_hash":"HASH"}
+{"schema_version":"1.0","event_type":"session.end","session_id":"p00-demo-session","trace_id":"TRACE_ID","ts":"2024-01-01T00:00:03.000Z","payload":{"message":"Session ended for p00 MVP"},"payload_hash":"HASH"}

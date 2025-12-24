@@ -1,0 +1,163 @@
+{
+    "schema": "observability.daily_metrics_summary.v1",
+    "day": "2025-01-10",
+    "timezone": "UTC",
+    "source": {
+      "event_log": "runtime_data/observability/observability_events.jsonl",
+      "aggregator_version": "obs-agg-v1",
+      "generated_at": "2025-01-10T23:59:59.000Z"
+    },
+    "scope": {
+      "app_name": "p00-agent-os-mvp",
+      "environment": "local",
+      "model": "unknown"
+    },
+    "run_summary": {
+      "runs_total": 3,
+      "runs_by_status": {
+        "success": 1,
+        "failed": 1,
+        "aborted": 1
+      },
+      "errors_total": 1,
+      "errors_by_layer": {
+        "tool": 1,
+        "policy": 0,
+        "runtime": 0,
+        "ir": 0
+      },
+      "errors_by_type": {
+        "timeout": 1
+      }
+    },
+    "tooling": {
+      "tool_calls_total": 4,
+      "tool_calls_by_name": {
+        "llm.generate": {
+          "total": 1,
+          "success": 1,
+          "error": 0
+        },
+        "http.fetch": {
+          "total": 3,
+          "success": 1,
+          "error": 2
+        }
+      },
+      "tool_latency_ms": {
+        "overall": {
+          "count": 4,
+          "min": 312,
+          "max": 842,
+          "p50": 401,
+          "p95": 842,
+          "mean": 489.25
+        },
+        "by_tool": {
+          "llm.generate": {
+            "count": 1,
+            "min": 842,
+            "max": 842,
+            "p50": 842,
+            "p95": 842,
+            "mean": 842
+          },
+          "http.fetch": {
+            "count": 3,
+            "min": 312,
+            "max": 401,
+            "p50": 401,
+            "p95": 401,
+            "mean": 341.33
+          }
+        }
+      }
+    },
+    "policy": {
+      "policy_checks_total": 2,
+      "policy_decisions": {
+        "allow": 1,
+        "block": 1
+      },
+      "policy_by_name": {
+        "memory_write_policy": {
+          "checks": 1,
+          "allow": 1,
+          "block": 0
+        },
+        "schema_version_guard": {
+          "checks": 1,
+          "allow": 0,
+          "block": 1
+        }
+      },
+      "policy_latency_ms": {
+        "count": 2,
+        "min": 25,
+        "max": 30,
+        "p50": 27.5,
+        "p95": 30,
+        "mean": 27.5
+      }
+    },
+    "memory": {
+      "memory_write_proposed_total": 2,
+      "memory_write_committed_total": 1,
+      "memory_write_blocked_total": 1,
+      "memory_writes_by_zone": {
+        "active": {
+          "proposed": 2,
+          "committed": 1,
+          "blocked": 1
+        },
+        "legacy": {
+          "proposed": 0,
+          "committed": 0,
+          "blocked": 0
+        }
+      },
+      "memory_block_reasons": {
+        "schema_version_outdated": 1
+      }
+    },
+    "latency": {
+      "run_total_ms": {
+        "count": 3,
+        "min": 120,
+        "max": 800,
+        "p50": 160,
+        "p95": 800,
+        "mean": 360
+      }
+    },
+    "tokens_and_cost": {
+      "token_estimate": {
+        "prompt_tokens": 0,
+        "completion_tokens": 0,
+        "total_tokens": 0,
+        "notes": "v1 allows missing token estimates when model wrapper does not emit them yet."
+      },
+      "cost_estimate_usd": {
+        "total": 0,
+        "by_tool": {},
+        "notes": "v1 allows cost=0 if token_estimate is missing; must be consistent over time."
+      }
+    },
+    "regression_hints": {
+      "warnings": [
+        {
+          "type": "tool_error_spike",
+          "message": "http.fetch error rate is 66.7% (2/3).",
+          "evidence": {
+            "tool_name": "http.fetch",
+            "error_rate": 0.6667
+          }
+        }
+      ],
+      "notes": [
+        "All metrics are derived from event log and are replayable.",
+        "Summary is disposable and can be recomputed at any time."
+      ]
+    }
+  }
+  

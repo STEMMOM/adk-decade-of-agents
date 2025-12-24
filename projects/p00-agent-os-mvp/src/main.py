@@ -1,11 +1,21 @@
 # projects/p00-agent-os-mvp/src/main.py
 from __future__ import annotations
 from typing import Any, Dict
+from datetime import datetime, timezone
 
-from adk_runtime.memory_store import load_memory, save_memory
+from adk_runtime import memory_store as legacy_memory_store
+from adk_runtime.event_ledger import EventLedger
+from adk_runtime.memory_gate_p08 import P08MemoryGate, RuntimeSchema
+from adk_runtime.process.boot import boot
 from adk_runtime.persona_engine import load_persona
 from adk_runtime.observability import log_event, new_trace_id
-from adk_runtime.paths import ensure_runtime_dirs
+from adk_runtime.paths import RUNTIME_DATA_DIR, ensure_runtime_dirs
+from adk_runtime.trace_context import TraceContext
+
+import uuid
+
+
+
 
 
 PROJECT_NAME = "p00-agent-os-mvp"
@@ -36,9 +46,17 @@ def run_with_kernel(
     # 这里先用最小 stub 保证 OS 流程成立。
     reply_text = f"[MVP Kernel Stub] You said: {user_message}"
 
+    # 模拟：agent 决定调用一个 tool
+    tool_calls = [
+        {
+            "tool_name": "fake_search",
+            "args": {"q": "AI news this week"},
+        }
+    ]
+
     return {
         "reply": reply_text,
-        "tool_calls": [],
+        "tool_calls": tool_calls,
         "debug": {
             "kernel": "stub",
             "session_id": session_id,
@@ -49,14 +67,25 @@ def run_with_kernel(
 
 def main() -> None:
     ensure_runtime_dirs()
+    ledger = EventLedger(RUNTIME_DATA_DIR / "events.jsonl")
+    boot_ctx = boot(ledger=ledger)
+    ledger = EventLedger(RUNTIME_DATA_DIR / "memory_gate_ledger.jsonl")
+    runtime_schema = RuntimeSchema(supported_schema_version=1, supported_store_version=0)
+    memory_gate = P08MemoryGate(legacy_memory_store, ledger, runtime_schema)
 
-    session_id = "p00-demo-session"
+    session_id = f"p00-{uuid.uuid4()}"
     trace_id = new_trace_id()
 
-    # 1) 加载 OS 级 persona & memory
-    persona = load_persona(user_id="susan")
-    memory = load_memory()
+    ctx = TraceContext(trace_id=trace_id)
 
+    # P08 startup confrontation (refuse over silent compatibility)
+    memory_gate.startup_confrontation(session_id="p00-startup")
+
+    # 1) persona & memory
+    persona = load_persona(user_id="susan")
+    memory = memory_gate.load_memory()
+
+    root_span_id, _ = ctx.new_span()
     log_event(
         event_type="session.start",
         source=SOURCE_TAG,
@@ -66,19 +95,25 @@ def main() -> None:
         },
         session_id=session_id,
         trace_id=trace_id,
+        actor="runtime",
+        span_id=root_span_id,
+        parent_span_id=None,
     )
+    
 
-    # 2) 模拟一条用户输入（你可以改成 CLI / 参数）
     user_message = "Hello, this is the first OS-level MVP run."
+    user_span_id, _ = ctx.new_span()
     log_event(
         event_type="user.message",
         source=SOURCE_TAG,
         payload={"text": user_message},
         session_id=session_id,
         trace_id=trace_id,
+        actor="user",
+        span_id=user_span_id,
+        parent_span_id=root_span_id,
     )
 
-    # 3) 把 persona + memory 一起喂给 Kernel 层
     kernel_result = run_with_kernel(
         user_message=user_message,
         persona=persona,
@@ -87,7 +122,7 @@ def main() -> None:
         trace_id=trace_id,
     )
 
-    # 4) 记录 Kernel 输出为事件
+    agent_span_id, _ = ctx.new_span()
     log_event(
         event_type="agent.reply",
         source=SOURCE_TAG,
@@ -97,30 +132,77 @@ def main() -> None:
         },
         session_id=session_id,
         trace_id=trace_id,
+        actor="agent",
+        span_id=agent_span_id,
+        parent_span_id=user_span_id,
     )
 
-    # 5) 更新长期记忆（MVP：只是追加一条 summary）
-    conversation_summaries = memory.setdefault("conversation_summaries", [])
-    conversation_summaries.append(
-        {
-            "app_name": PROJECT_NAME,
-            "session_id": session_id,
-            "summary_text": f"MVP run: user said '{user_message}', agent replied stub text.",
+    for call in kernel_result.get("tool_calls", []):
+        tool_span_id, _ = ctx.new_span()
+        log_event(
+            event_type="tool.call",
+            source=SOURCE_TAG,
+            payload={
+                "tool_name": call.get("tool_name"),
+                "args": call.get("args", {}),
+            },
+            session_id=session_id,
+            trace_id=trace_id,
+            actor="tool",
+            span_id=tool_span_id,
+            parent_span_id=agent_span_id,
+        )
+
+        tool_output = {"ok": True, "data": "stub tool result"}
+
+        tool_result_span_id, _ = ctx.new_span()
+        log_event(
+            event_type="tool.result",
+            source=SOURCE_TAG,
+            payload={
+                "tool_name": call.get("tool_name"),
+                "result": tool_output,
+            },
+            session_id=session_id,
+            trace_id=trace_id,
+            actor="tool",
+            span_id=tool_result_span_id,
+            parent_span_id=tool_span_id,
+        )
+
+    # memory update (P07 allow-list: notes.* only)
+    persona_id = persona.get("user_id", "unknown")
+    result = memory_gate.save_memory(
+        {},
+        source="p00",
+        actor={"agent_id": "p00", "persona_id": persona_id},
+        # All new writes must use runtime.current schema_version; legacy versions are migration-only.
+        schema_version=runtime_schema.supported_schema_version,
+        zone="observation",
+        key=f"notes.session_{session_id}",
+        value={
+            "text": user_message,
+            "ts": datetime.now(timezone.utc).isoformat(),
             "trace_id": trace_id,
-        }
+        },
     )
-    save_memory(memory)
+    if result["status"] == "blocked":
+        print("WARNING: Memory write blocked by policy:", result["decision"]["reason"])
 
+    end_span_id, _ = ctx.new_span()
     log_event(
         event_type="session.end",
         source=SOURCE_TAG,
         payload={"message": "Session ended for p00 MVP"},
         session_id=session_id,
         trace_id=trace_id,
+        actor="runtime",
+        span_id=end_span_id,
+        parent_span_id=root_span_id,
     )
 
-    # 在控制台打印一行，证明一切走完
     print(kernel_result["reply"])
+
 
 
 if __name__ == "__main__":
