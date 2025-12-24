@@ -30,3 +30,15 @@ logs/
 # Runtime OS state
 runtime_data/
 
+
+# Python runtime artifacts
+__pycache__/
+*.py[cod]
+
+# Virtualenv
+.venv/
+venv/
+ENV/
+
+# Runtime data (your system)
+runtime_data/
