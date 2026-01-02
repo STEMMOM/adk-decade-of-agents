@@ -102,20 +102,15 @@ def boot(*, ledger: EventLedger) -> BootContext:
     run_id = f"run_{uuid.uuid4().hex}"
     started_at = _utc_now_iso()
 
-    # Determine boot_mode using observable artifacts
-    memory_store_path = paths.memory_store_path()
-    has_store = os.path.exists(memory_store_path)
-
     recovered_from: Optional[str] = None
-    if not has_store:
+    last_status = _get_last_run_status(ledger)
+    if last_status.get("status") == "no_boot_found":
         boot_mode: BootMode = "cold"
+    elif last_status.get("status") == "incomplete":
+        boot_mode = "recover"
+        recovered_from = last_status.get("recovered_from_run_id")
     else:
-        last_status = _get_last_run_status(ledger)
-        if last_status.get("status") == "incomplete":
-            boot_mode = "recover"
-            recovered_from = last_status.get("recovered_from_run_id")
-        else:
-            boot_mode = "warm"
+        boot_mode = "warm"
 
     ctx = BootContext(
         system_id=system_id,
