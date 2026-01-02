@@ -72,6 +72,18 @@ class EventWriter:
         ts: Optional[str] = None,
     ) -> EventEnvelopeV1:
         payload = payload or {}
+        # Normalize reserved meta-fields inside payload; remove forbidden/legacy keys.
+        if "trace_id" in payload:
+            payload = dict(payload)
+            payload.pop("trace_id", None)
+        # migrate legacy span keys if reserved not set
+        for legacy, reserved in (("span_id", "_span_id"), ("parent_span_id", "_parent_span_id")):
+            if legacy in payload and reserved not in payload:
+                payload = dict(payload)
+                payload[reserved] = payload.pop(legacy)
+            elif legacy in payload:
+                payload = dict(payload)
+                payload.pop(legacy, None)
         ts = ts or utc_ts_iso()
 
         payload_canon = canonical_json(payload)

@@ -1,28 +1,19 @@
-# Event Envelope Protocol v1
+# Event Envelope Protocol v1 (Redline)
 
 **Status:** Stable  
 **Scope:** OS-level runtime events  
 **Audience:** Runtime / Agent / Governance engineers  
 **Version:** 1.0
 
-## Purpose
+## 1. Authority
 
-The Event Envelope Protocol defines the minimal, non-drifting structure for runtime events.
-Events are not logs; they are durable, structured facts that support auditability,
-causal replay, and long-term system memory.
+This protocol defines the minimal, non-drifting **event envelope** for `events.jsonl` (JSONL).
+Once an event is appended to the ledger, its envelope fields and meanings MUST NOT be implicitly changed.
 
-Once an event is written to `events.jsonl`, its structure and semantics must not be
-changed implicitly.
+- This file is the enforcement contract.
+- Explanations, rationale, tutorials, and extended examples live in `docs/protocols/events/event_envelope_v1_guide.md`.
 
-## Design Principles
-
-1. Determinism: The same payload must produce the same hash.
-2. Minimal but sufficient: The envelope is fixed; semantics evolve via payload.
-3. Machine-first: Fields must be stable and parseable.
-4. Auditability: Important actions leave structured evidence.
-5. Forward compatibility: New capabilities require new versions or new fields.
-
-## Envelope Structure
+## 2. Data Contract
 
 Each event is a single JSON object (one line, JSONL) with the following top-level fields:
 
@@ -36,94 +27,111 @@ Each event is a single JSON object (one line, JSONL) with the following top-leve
   "payload": { ... },
   "payload_hash": "..."
 }
-```
+Optional extension fields (allowed by forward compatibility rules):
+prev_envelope_hash (string): pointer to the previous event’s envelope_hash within the same session (if the system defines envelope_hash).
+envelope_hash (string): a system-defined hash of the envelope for tamper-evidence (if implemented).
+Authoritative schema: protocols/events/event_envelope_v1.schema.json
+3. Invariants (MUST / SHOULD)
+3.1 Required fields
+MUST contain: schema_version, event_type, session_id, trace_id, ts, payload, payload_hash.
+MUST set schema_version to "1.0" for v1 events.
+3.2 Types
+payload MUST be a JSON object (default {}).
+payload_hash MUST be a 64-hex SHA-256 digest string (lowercase hex recommended).
+3.3 Timestamp
+ts MUST be a UTC timestamp in RFC3339 / ISO 8601 format with milliseconds and trailing Z
+(e.g., 2024-12-17T03:21:45.123Z).
+3.4 Hash correctness
+payload_hash MUST equal SHA-256 hex digest of the canonicalized payload (see §4).
+3.5 Append-only ledger semantics
+Events written to events.jsonl MUST be treated as durable facts.
+Implementations MUST NOT rewrite historical events in-place.
+If correction is needed, it MUST be represented as a new event.
+3.6 Optional chaining (tamper-evidence)
+If prev_envelope_hash is present, it SHOULD refer to the previous event’s envelope_hash in the same session.
+If envelope_hash is present, its derivation MUST be deterministic and documented as a contract (in this protocol or a separately versioned protocol).
+4. Canonicalization Rules (for payload_hash)
+Canonicalize payload as JSON with:
+keys sorted
+no whitespace / compact separators
+UTF-8 encoding
+ensure_ascii=false behavior (i.e., do not escape non-ASCII)
+Then:
+payload_hash = SHA-256 hex digest of that canonicalized payload string.
+5. Backward & Forward Compatibility
+Old events are always valid under the protocol version they were written with.
+New fields:
+MAY be added as optional fields, or
+MUST be introduced via a new schema_version for breaking changes.
+Forbidden:
+MUST NOT reinterpret existing fields’ semantics.
+MUST NOT silently change field definitions or hashing rules.
 
-## Field Definitions
+---
 
-Field | Type | Required | Description
----|---|---|---
-`schema_version` | string | yes | Protocol version, fixed as `"1.0"` in v1.
-`event_type` | string | yes | Semantic category, e.g. `session.start`, `user.message`, `agent.reply`, `session.end`.
-`session_id` | string | yes | Session identifier for a lifecycle instance.
-`trace_id` | string | yes | Correlation identifier for a causal chain.
-`ts` | string | yes | UTC timestamp in ISO 8601 / RFC3339 format with milliseconds and trailing `Z`.
-`payload` | object | yes | Event-specific structured data. Defaults to `{}`.
-`payload_hash` | string | yes | SHA-256 hex digest of the canonicalized `payload`.
-
-## Canonicalization Rules
-
-- `payload` is serialized as JSON with:
-  - keys sorted
-  - no whitespace
-  - `ensure_ascii=false`
-- `payload_hash` is the SHA-256 hex digest of the canonicalized `payload` string.
-
-## Example
+## 2) `protocols/events/event_envelope_v1.schema.json`
 
 ```json
 {
-  "schema_version": "1.0",
-  "event_type": "user.message",
-  "session_id": "p00-demo-session",
-  "trace_id": "9b9b9c1e-2b1c-4df6-9e42-7a1b5e2b6d3a",
-  "ts": "2024-12-17T03:21:45.123Z",
-  "payload": {
-    "text": "Hello, world."
-  },
-  "payload_hash": "9e6b5f0a1bcb13cdb2f8b2f6c36a9f59b8c64d3b7d2a2f3c7b2b84b1a5c9f1d2"
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "event-envelope-v1.schema.json",
+  "title": "Event Envelope Protocol v1",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "schema_version",
+    "event_type",
+    "session_id",
+    "trace_id",
+    "ts",
+    "payload",
+    "payload_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "Protocol version, fixed as '1.0' in v1."
+    },
+    "event_type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Semantic category (e.g. session.start, user.message, agent.reply, session.end)."
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Session identifier for a lifecycle instance."
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Correlation identifier for a causal chain."
+    },
+    "ts": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$",
+      "description": "UTC timestamp in RFC3339/ISO8601 with milliseconds and trailing Z."
+    },
+    "payload": {
+      "type": "object",
+      "description": "Event-specific structured data. Defaults to {}."
+    },
+    "payload_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "SHA-256 hex digest of canonicalized payload."
+    },
+
+    "prev_envelope_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Optional pointer to previous event's envelope_hash in the same session (if envelope_hash is implemented)."
+    },
+    "envelope_hash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Optional system-defined deterministic hash of the envelope for tamper-evidence (contract must be documented)."
+    }
+  }
 }
-```
-
-### 4.13 `prev_envelope_hash` (optional, recommended)
-
-* 指向同一 session 中上一条事件的 `envelope_hash`
-* 形成 **hash-linked event chain**
-* 用于审计与防篡改检测
-
----
-
-## 5. Event Ordering & Causality（顺序与因果）
-
-* **时间顺序 ≠ 因果顺序**
-* 因果关系由：
-
-  * `trace_id`
-  * `span_id`
-  * `parent_span_id`
-    决定
-
-Replay / Debug / Audit 时 **必须优先使用因果结构**。
-
----
-
-## 6. Backward & Forward Compatibility（兼容性原则）
-
-* **旧事件永远有效**
-* 新字段只能：
-
-  * 增加为 optional
-  * 或通过提升 `schema_version` 引入
-* 禁止：
-
-  * 重解释旧字段语义
-  * 静默修改字段口径
-
----
-
-## 7. Non-Goals（明确不做的事）
-
-* 不试图描述 UI 行为
-* 不作为人类日志系统
-* 不嵌入模型 prompt 或思维链
-* 不保证防篡改（只保证可检测）
-
----
-
-## 8. Summary（一句话总结）
-
-> **Event Envelope v1 定义了什么才算“真的发生过”。**
->
-> 在这个 OS 里：
-> **没进事件账本的事，从系统角度等于没发生。**
-
----

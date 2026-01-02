@@ -151,7 +151,6 @@ def log_event(
 
     p = dict(payload)
     p["_source"] = source
-    p["_trace_id"] = trace_id
     system_id = trace_context.get_system_id()
     process_id = trace_context.get_process_id()
     run_id = trace_context.get_run_id()

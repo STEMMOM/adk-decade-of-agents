@@ -16,7 +16,7 @@ BootMode = Literal["cold", "warm", "recover"]
 
 
 def _utc_now_iso() -> str:
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(timezone.utc).isoformat(timespec="milliseconds").replace("+00:00", "Z")
 
 
 @dataclass(frozen=True)
@@ -124,17 +124,22 @@ def boot(*, ledger: EventLedger) -> BootContext:
     # Set context before any downstream observability writes.
     trace_context.set_process_context(ctx.system_id, ctx.process_id, ctx.run_id)
 
-    # Write system.boot as an auditable fact
-    ledger.append(
-        "system.boot",
-        {
-            "system_id": ctx.system_id,
-            "process_id": ctx.process_id,
-            "run_id": ctx.run_id,
-            "boot_mode": ctx.boot_mode,
-            "started_at": ctx.started_at,
-            "recovered_from_run_id": ctx.recovered_from_run_id,
-        },
-    )
+    # Write system.boot as P10 Event Envelope v1
+    boot_span_id = str(uuid.uuid4())
+    trace_context.set_boot_span_id(boot_span_id)
+    payload = {
+        "system_id": ctx.system_id,
+        "process_id": ctx.process_id,
+        "run_id": ctx.run_id,
+        "boot_mode": ctx.boot_mode,
+        "started_at": ctx.started_at,
+        "recovered_from_run_id": ctx.recovered_from_run_id,
+        "trace_id": ctx.run_id,
+        "actor": "runtime",
+        "span_id": boot_span_id,
+        "_actor": "runtime",
+        "_span_id": boot_span_id,
+    }
+    ledger.append("system.boot", payload, session_id="system")
 
     return ctx

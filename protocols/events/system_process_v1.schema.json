@@ -1,0 +1,115 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "System Process Events v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_type",
+    "session_id",
+    "trace_id",
+    "ts",
+    "payload",
+    "payload_hash"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1.0"
+    },
+    "event_type": {
+      "enum": ["system.boot", "system.shutdown"]
+    },
+    "session_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "trace_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "ts": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+    },
+    "payload_hash": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "payload": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/system_boot_payload"
+        },
+        {
+          "$ref": "#/$defs/system_shutdown_payload"
+        }
+      ]
+    }
+  },
+  "$defs": {
+    "system_boot_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system_id",
+        "process_id",
+        "run_id",
+        "boot_mode",
+        "started_at"
+      ],
+      "properties": {
+        "system_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "process_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "boot_mode": {
+          "enum": ["cold", "warm", "recover"]
+        },
+        "started_at": {
+          "type": "string",
+          "pattern": "^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{3}Z$"
+        },
+        "recovered_from_run_id": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    },
+    "system_shutdown_payload": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "system_id",
+        "process_id",
+        "run_id",
+        "exit_reason"
+      ],
+      "properties": {
+        "system_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "process_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "run_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "exit_reason": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
