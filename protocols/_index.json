@@ -1,0 +1,26 @@
+[
+    {
+      "id": "events.event_envelope/v1",
+      "status": "stable",
+      "authority_files": [
+        "protocols/events/event_envelope_v1.md",
+        "protocols/events/event_envelope_v1.schema.json"
+      ],
+      "tests": [
+        "tests/protocols/test_event_envelope_v1_schema.py",
+        "tests/protocols/test_event_envelope_v1_invariants.py"
+      ]
+    },
+    {
+      "id": "events.event_type_registry/v1",
+      "status": "stable",
+      "authority_files": [
+        "protocols/events/event_type_registry_v1.json",
+        "protocols/events/event_type_registry_v1.md"
+      ],
+      "tests": [
+        "tests/test_p00_boot_invariants.py"
+      ]
+    }
+  ]
+  
