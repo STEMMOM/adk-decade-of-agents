@@ -202,6 +202,23 @@ def main() -> None:
     )
 
     print(kernel_result["reply"])
+    # P10: emit system.shutdown for this run (Event Envelope v1)
+    shutdown_span = str(uuid.uuid4())
+    from adk_runtime.events import append_event
+    append_event(
+        event_type="system.shutdown",
+        session_id="system",
+        trace_id=boot_ctx.run_id,
+        payload={
+            "system_id": boot_ctx.system_id,
+            "process_id": boot_ctx.process_id,
+            "run_id": boot_ctx.run_id,
+            "exit_reason": "normal",
+            "_actor": "runtime",
+            "_source": SOURCE_TAG,
+            "_span_id": shutdown_span,
+        },
+    )
 
 
 

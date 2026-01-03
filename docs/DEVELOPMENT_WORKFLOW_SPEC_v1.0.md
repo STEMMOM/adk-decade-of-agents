@@ -26,6 +26,7 @@ This specification defines the end-to-end workflow for:
 5. Supporting the multi-project architecture of the repository  
 
 This workflow applies to all **50+ mini-projects** and **all modules** (Sessions & Memory, MCP, Context Engineering, etc.).
+RRB/CI default test entrypoint: `pytest -q -m gate` (legacy suites are non-blocking).
 
 ---
 
@@ -332,4 +333,3 @@ Following this spec ensures that every project:
 **End of Specification v1.0**
 
 ```
-

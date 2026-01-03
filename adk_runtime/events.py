@@ -8,8 +8,9 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from .paths import EVENTS_FILE, ensure_runtime_dirs
+from adk_runtime.trace_context import get_current_actor
 
-SCHEMA_VERSION = "1.0"
+SCHEMA_VERSION = "1.1"
 
 
 def utc_ts_iso() -> str:
@@ -70,6 +71,7 @@ class EventWriter:
         trace_id: str,
         payload: Optional[Dict[str, Any]] = None,
         ts: Optional[str] = None,
+        actor: Optional[Dict[str, Any]] = None,
     ) -> EventEnvelopeV1:
         payload = payload or {}
         # Normalize reserved meta-fields inside payload; remove forbidden/legacy keys.
@@ -86,6 +88,12 @@ class EventWriter:
                 payload.pop(legacy, None)
         ts = ts or utc_ts_iso()
 
+        act = actor if actor is not None else get_current_actor()
+        assert isinstance(act, dict), "actor must be a dict"
+        assert act.get("kind"), "actor.kind required"
+        assert act.get("id"), "actor.id required"
+        assert act.get("id") != "unknown", "actor.id must not be unknown"
+
         payload_canon = canonical_json(payload)
         payload_hash = sha256_hex(payload_canon)
 
@@ -99,7 +107,9 @@ class EventWriter:
             payload_hash=payload_hash,
         )
 
-        line = canonical_json(env.to_dict())
+        env_dict = env.to_dict()
+        env_dict["actor"] = act
+        line = canonical_json(env_dict)
         with self.events_file.open("a", encoding="utf-8") as f:
             f.write(line + "\n")
 
@@ -113,6 +123,7 @@ def append_event(
     trace_id: str,
     payload: Optional[Dict[str, Any]] = None,
     ts: Optional[str] = None,
+    actor: Optional[Dict[str, Any]] = None,
 ) -> EventEnvelopeV1:
     ensure_runtime_dirs()
     writer = EventWriter(EVENTS_FILE)
@@ -122,4 +133,5 @@ def append_event(
         trace_id=trace_id,
         payload=payload,
         ts=ts,
+        actor=actor,
     )

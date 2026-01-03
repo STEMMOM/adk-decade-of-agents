@@ -5,6 +5,7 @@ import json
 import tempfile
 import os
 from pathlib import Path
+import pytest
 
 from scripts.observability.obs_export_p09 import export as export_p09
 from scripts.observability.obs_aggregate_daily import main as agg_main  # if your aggregator has a main()
@@ -14,6 +15,8 @@ LEDGER_SAMPLE = """\
 {"event_type":"tool.call","run_id":"run_test_001","session_id":"p00-demo-session","timestamp":"2025-12-22T01:44:28.682947Z","layer":"tool","payload":{"tool_name":"fake_search","args":{"q":"AI news this week"}}}
 {"event_type":"tool.result","run_id":"run_test_001","session_id":"p00-demo-session","timestamp":"2025-12-22T01:44:28.683038Z","layer":"tool","payload":{"tool_name":"fake_search","result":{"ok":true}}}
 """
+
+pytestmark = pytest.mark.legacy
 
 def test_p09_observability_smoke():
     with tempfile.TemporaryDirectory() as td:

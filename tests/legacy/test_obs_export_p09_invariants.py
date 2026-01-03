@@ -19,9 +19,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 from typing import Dict, Any, List
+import pytest
 
 
 P09_OBS = Path("runtime_data/observability/observability_events_p09.jsonl")
+
+pytestmark = pytest.mark.legacy
 
 
 def _read_jsonl(path: Path) -> List[Dict[str, Any]]:

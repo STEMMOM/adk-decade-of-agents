@@ -1,11 +1,11 @@
 from __future__ import annotations
 
 import json
-import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Dict, Optional
 
+from adk_runtime.events import append_event
 
 @dataclass
 class EventLedger:
@@ -14,16 +14,29 @@ class EventLedger:
     def __post_init__(self) -> None:
         self.path = self.path if isinstance(self.path, Path) else Path(self.path)
 
-    def append(self, event_type: str, payload: Dict[str, Any], *, session_id: Optional[str] = None) -> None:
+    def append(
+        self,
+        event_type: str,
+        payload: Dict[str, Any],
+        *,
+        session_id: Optional[str] = None,
+        trace_id: Optional[str] = None,
+        ts: Optional[str] = None,
+    ) -> None:
+        payload = dict(payload) if payload else {}
+        # derive session_id
+        sid = session_id or payload.pop("session_id", None) or "unknown"
+        # derive trace_id, remove from payload
+        trace = trace_id or payload.pop("trace_id", None) or payload.pop("_trace_id", None) or "unknown"
+        # ensure directory exists
         self.path.parent.mkdir(parents=True, exist_ok=True)
-        record = {
-            "ts": time.time(),
-            "event_type": event_type,
-            "session_id": session_id,
-            "payload": payload,
-        }
-        with self.path.open("a", encoding="utf-8") as f:
-            f.write(json.dumps(record, ensure_ascii=False) + "\n")
+        append_event(
+            event_type=event_type,
+            session_id=sid,
+            trace_id=trace,
+            payload=payload,
+            ts=ts,
+        )
 
     def read_all(self) -> list[dict]:
         """

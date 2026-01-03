@@ -6,6 +6,11 @@
 # REGRESSION.md  
 ## Season 1 — Life-Cycle Regression Suite (P00–P20A)
 
+## Release Gate
+- Gate (blocking): `pytest -q -m gate`
+- Legacy (non-blocking): `pytest -q -m legacy`
+- Policy: Gate must be green for release; legacy may fail but must be observable/traceable.
+
 This document defines the **canonical regression suite** for **Season 1** of the
 **ADK Memory Series / Decade of Agents** project.
 

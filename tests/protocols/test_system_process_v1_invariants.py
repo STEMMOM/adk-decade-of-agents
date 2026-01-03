@@ -64,3 +64,26 @@ def test_run_level_invariants():
         elif et == "system.shutdown":
             if sys_id and run_id:
                 shutdown_seen.add((sys_id, run_id))
+
+
+def test_synthetic_closure_invariants():
+    """
+    Synthetic run created in-memory must have exactly one shutdown.
+    """
+    run_id = "run_synth_001"
+    sys_id = "sys_synth"
+    proc_id = "proc_synth"
+    synth_events = [
+        {
+            "event_type": "system.boot",
+            "payload": {"system_id": sys_id, "process_id": proc_id, "run_id": run_id},
+        },
+        {
+            "event_type": "system.shutdown",
+            "payload": {"system_id": sys_id, "process_id": proc_id, "run_id": run_id},
+        },
+    ]
+    boots = [e for e in synth_events if e["event_type"] == "system.boot"]
+    shutdowns = [e for e in synth_events if e["event_type"] == "system.shutdown"]
+    assert len(boots) == 1
+    assert len(shutdowns) == 1

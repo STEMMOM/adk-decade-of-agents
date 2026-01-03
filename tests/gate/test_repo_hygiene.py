@@ -4,6 +4,10 @@ import os
 import subprocess
 from pathlib import Path
 
+import pytest
+from tests.gate._repo_root import repo_root
+
+pytestmark = pytest.mark.gate
 
 FORBIDDEN_PATH_PREFIXES = (
     ".venv/",
@@ -25,7 +29,7 @@ FORBIDDEN_SUFFIXES = (
 
 def _git_ls_files() -> list[str]:
     # List tracked files (index), not untracked files.
-    out = subprocess.check_output(["git", "ls-files"], text=True)
+    out = subprocess.check_output(["git", "ls-files"], text=True, cwd=str(repo_root()))
     return [line.strip() for line in out.splitlines() if line.strip()]
 
 
@@ -60,7 +64,8 @@ def test_repo_hygiene_no_runtime_or_venv_tracked() -> None:
 
 
 def test_gitignore_has_must_have_rules() -> None:
-    gi = Path(".gitignore")
+    root = repo_root()
+    gi = root / ".gitignore"
     assert gi.exists(), ".gitignore missing"
 
     content = gi.read_text()

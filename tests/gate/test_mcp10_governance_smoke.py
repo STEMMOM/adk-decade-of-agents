@@ -28,12 +28,15 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 import pytest
+from tests.gate._repo_root import repo_root
+
+pytestmark = pytest.mark.gate
 
 JSON = Dict[str, Any]
 
 
 class JsonRpcClientProc:
-    def __init__(self, cmd: list[str], env: Optional[dict[str, str]] = None) -> None:
+    def __init__(self, cmd: list[str], env: Optional[dict[str, str]] = None, cwd: Optional[str] = None) -> None:
         e = os.environ.copy()
         if env:
             e.update(env)
@@ -45,6 +48,7 @@ class JsonRpcClientProc:
             text=True,
             env=e,
             bufsize=1,
+            cwd=cwd,
         )
         assert self.p.stdin and self.p.stdout and self.p.stderr
         self._id = 1
@@ -107,6 +111,7 @@ def tmp_runtime(tmp_path: Path) -> dict[str, Path]:
 
 @pytest.fixture
 def gov_proc(tmp_runtime: dict[str, Path]) -> JsonRpcClientProc:
+    root = repo_root()
     cmd = ["python", "-m", "projects.mcp.10-governance-layer.main"]
     env = {
         # Use the repo's MCP-09 registry (downstream mock fs/policy servers)
@@ -115,7 +120,7 @@ def gov_proc(tmp_runtime: dict[str, Path]) -> JsonRpcClientProc:
         "MCP10_OVERRIDES": str(tmp_runtime["overrides"]),
         "MCP10_DECISIONS": str(tmp_runtime["decisions"]),
     }
-    proc = JsonRpcClientProc(cmd, env=env)
+    proc = JsonRpcClientProc(cmd, env=env, cwd=str(root))
     yield proc
     proc.close()
 
