@@ -1,0 +1,1 @@
+{"schema_version": "1.0", "event_type": "user.message", "session_id": "p00-demo-session", "trace_id": "9b9b9c1e-2b1c-4df6-9e42-7a1b5e2b6d3a", "ts": "2024-12-17T03:21:45.123Z", "payload": {"text": "Hello, world."}, "payload_hash": "4a5e9325c58a1afa66fb060e6fb172f3210228f02f57f60697b2cb952f901361", "envelope_hash": "0c736d0959478927ef4df4795740085a1ba9a780bba89e9f85bff3d15e142a74"}
